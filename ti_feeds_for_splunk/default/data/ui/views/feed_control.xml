@@ -1,0 +1,11 @@
+<dashboard version="1.1"  script="feed_control.js" theme="dark">
+  <label>Feed Control Config</label>
+  <description>Control and monitor the fetch_feeds.py scripted input</description>
+  <row>
+    <panel>
+      <html>
+        <div id="feedControlContainer"/>
+      </html>
+    </panel>
+  </row>
+</dashboard>

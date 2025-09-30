@@ -1,0 +1,176 @@
+<form version="1.1" theme="dark">
+  <label>Summary</label>
+  <description>Summary dashboard for OSINT threat feeds</description>
+  <!-- Only Time Input -->
+  <!-- KPI Row -->
+  <!-- Trend and Feed Counts -->
+  <!-- IOC Type and Geo Map -->
+  <!-- Top IOCs and Overlaps -->
+  <fieldset submitButton="true">
+    <input type="time" token="time">
+      <label>Time Range</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Total IOCs</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | stats count as total</query>
+        </search>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Unique IOCs</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | stats dc(value) as unique</query>
+        </search>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Active Feeds</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | stats dc(feed) as feeds</query>
+        </search>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Last Event Time</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | stats latest(_time) as last 
+          | eval last=strftime(last,"%Y-%m-%d %H:%M:%S")</query>
+        </search>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>IOC Trend by Feed</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | timechart span=1d count by feed</query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">stacked</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Feed Counts</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | stats count by feed | sort - count</query>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">all</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>IOC Type</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+ 
+| eval ioc_type=case(
+    match(value,"^\d{1,3}(?:\.\d{1,3}){3}(:\d+)?$$"),"ip",
+    match(value,"^https?://"),"url",
+    match(value,"^[a-fA-F0-9]{32}$$"),"md5",
+    match(value,"^[a-fA-F0-9]{40}$$"),"sha1",
+    match(value,"^[a-fA-F0-9]{64}$$"),"sha256",
+    match(value,"^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$$"),"domain",
+    1=1,"other"
+  )
+| stats count by ioc_type</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <map>
+        <title>IP IOC Geographic Distribution</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$
+| rex field=value "(?&lt;ip&gt;\d{1,3}(?:\.\d{1,3}){3})"
+| iplocation ip
+| geostats count by Country
+| head 30</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+      </map>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top IOCs</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | stats count values(feed) as feeds by value
+          | sort - count | head 20</query>
+        </search>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Cross-Feed Overlaps</title>
+        <search>
+          <query>index=ti_feeds earliest=$time.earliest$ latest=$time.latest$ 
+          | stats dc(feed) as feed_count values(feed) as feeds by value
+          | where feed_count&gt;1
+          | sort - feed_count | head 20</query>
+        </search>
+      </table>
+    </panel>
+  </row>
+</form>

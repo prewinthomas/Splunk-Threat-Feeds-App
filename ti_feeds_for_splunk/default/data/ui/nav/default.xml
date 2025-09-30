@@ -1,0 +1,6 @@
+<nav>
+  <view name="home" label="Summary" />
+  <view name="nl2_search" label="Natural Language Search" />
+  <view name="feed_control" label="Feed Configuration" />
+  <view name="search" label="Search" />
+</nav>

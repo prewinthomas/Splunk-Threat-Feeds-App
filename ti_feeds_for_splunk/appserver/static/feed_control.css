@@ -1,0 +1,28 @@
+﻿#status {
+  background-color: #1e1e1e;
+  color: #cfcfcf;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 13px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#result {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+button#apply {
+  background-color: #007acc;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button#apply:hover {
+  background-color: #005a9e;
+}

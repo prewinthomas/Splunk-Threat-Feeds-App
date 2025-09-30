@@ -1,0 +1,42 @@
+<form version="1.1" theme="dark">
+  <label>Natural Language Search</label>
+  <description>Type a natural language query, click Submit, review the translated SPL, then click the row to execute it.</description>
+  <!-- Input fieldset with submit button -->
+  <!-- Base search: runs nl2spl once, tied to the input -->
+  <search id="base_nl2spl">
+    <query>| nl2spl "$nl_query$"</query>
+    <earliest>-7d@d</earliest>
+    <latest>now</latest>
+  </search>
+  <!-- Panel A: Show translated SPL -->
+  <!-- Panel B: Execute translated SPL -->
+  <fieldset submitButton="true">
+    <input type="text" token="nl_query" searchWhenChanged="false">
+      <label>Enter Natural Language Query</label>
+      <default>Show me all new Cobalt Strike C2 servers from ThreatFox this week</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Translated SPL</title>
+      <table>
+        <search base="base_nl2spl">
+          <query>| table spl</query>
+        </search>
+        <drilldown>
+          <set token="spl_token">$row.spl$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Executed Results</title>
+      <table>
+        <search depends="$spl_token$">
+          <query>$spl_token$</query>
+        </search>
+      </table>
+    </panel>
+  </row>
+</form>
