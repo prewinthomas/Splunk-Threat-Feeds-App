@@ -1,8 +1,0 @@
-<nav>
-  <view name="executive_summary" default="true" />
-  <view name="ioc_enrichment_lookup" label="IOC Enrichment Lookup" />
-  <view name="ioc_relationship_graph" label="IOC Relationship Graph" />
-  <view name="ioc_search" label="IOC Search" />
-  <view name="feed_config" label="Configuration" />
-  <view name="search" label="Search" />
-</nav>
