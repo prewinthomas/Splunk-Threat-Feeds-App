@@ -48,8 +48,6 @@ spl
 index=ti_feeds sourcetype=ti:openfeeds
 
 Requirements
-Splunk Enterprise 9.x+(tested on 9.x).
-
+Splunk Enterprise 9.2+(tested on 9.4).
 Network connectivity to OSINT feed sources.
-
 Appropriate index (ti_feeds) created and accessible.
